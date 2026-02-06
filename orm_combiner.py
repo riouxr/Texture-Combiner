@@ -351,7 +351,7 @@ class ORMCombiner:
                             
                             # Combine into RGB (ORM)
                             orm_img = Image.merge('RGB', (ao_channel, rough_channel, metal_channel))
-                            output_path = os.path.join(output_dir, f"{base_name}_ORM.png")
+                            output_path = os.path.join(output_dir, f"T_{base_name}_ORM.png")
                             orm_img.save(output_path, 'PNG')
                             orm_success += 1
                     elif self.ignore_missing.get():
@@ -383,7 +383,7 @@ class ORMCombiner:
                                     channels[i] = Image.new('L', size, 0)
                             
                             orm_img = Image.merge('RGB', tuple(channels))
-                            output_path = os.path.join(output_dir, f"{base_name}_ORM.png")
+                            output_path = os.path.join(output_dir, f"T_{base_name}_ORM.png")
                             orm_img.save(output_path, 'PNG')
                             orm_partial += 1
                     
@@ -391,7 +391,7 @@ class ORMCombiner:
                     if group['ALBEDO']:
                         try:
                             ext = os.path.splitext(group['ALBEDO'])[1]
-                            new_path = os.path.join(output_dir, f"{base_name}_BC{ext}")
+                            new_path = os.path.join(output_dir, f"T_{base_name}_BC{ext}")
                             shutil.copy2(group['ALBEDO'], new_path)
                             albedo_renamed += 1
                         except Exception as e:
@@ -402,7 +402,7 @@ class ORMCombiner:
                     if group['NORMAL']:
                         try:
                             ext = os.path.splitext(group['NORMAL'])[1]
-                            new_path = os.path.join(output_dir, f"{base_name}_N{ext}")
+                            new_path = os.path.join(output_dir, f"T_{base_name}_N{ext}")
                             shutil.copy2(group['NORMAL'], new_path)
                             normal_renamed += 1
                         except Exception as e:
@@ -413,7 +413,7 @@ class ORMCombiner:
                     if group['HEIGHT']:
                         try:
                             ext = os.path.splitext(group['HEIGHT'])[1]
-                            new_path = os.path.join(output_dir, f"{base_name}_D{ext}")
+                            new_path = os.path.join(output_dir, f"T_{base_name}_D{ext}")
                             shutil.copy2(group['HEIGHT'], new_path)
                             height_renamed += 1
                         except Exception as e:
