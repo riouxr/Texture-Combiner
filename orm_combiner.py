@@ -242,6 +242,13 @@ class ORMCombiner:
             return base_name[2:]
         return base_name
 
+    def _strip_albedo_suffix(self, base_name):
+        """Strip any trailing albedo suffix (e.g. _BC) left over from generator naming like T_foo_BC_NORM."""
+        for suffix in self.ALBEDO_SUFFIXES:
+            if base_name.lower().endswith(suffix.lower()):
+                return base_name[:-len(suffix)]
+        return base_name
+
     def detect_texture_type(self, filename):
         """Detect texture type based on filename suffix"""
         # Remove extension
@@ -250,15 +257,15 @@ class ORMCombiner:
         # Check each suffix type (case-insensitive)
         for suffix in self.AO_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'AO', self._strip_prefix(name_without_ext[:-len(suffix)])
+                return 'AO', self._strip_albedo_suffix(self._strip_prefix(name_without_ext[:-len(suffix)]))
         
         for suffix in self.ROUGH_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'ROUGH', self._strip_prefix(name_without_ext[:-len(suffix)])
+                return 'ROUGH', self._strip_albedo_suffix(self._strip_prefix(name_without_ext[:-len(suffix)]))
         
         for suffix in self.METAL_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'METAL', self._strip_prefix(name_without_ext[:-len(suffix)])
+                return 'METAL', self._strip_albedo_suffix(self._strip_prefix(name_without_ext[:-len(suffix)]))
         
         for suffix in self.ALBEDO_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
@@ -266,11 +273,11 @@ class ORMCombiner:
         
         for suffix in self.NORMAL_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'NORMAL', self._strip_prefix(name_without_ext[:-len(suffix)])
+                return 'NORMAL', self._strip_albedo_suffix(self._strip_prefix(name_without_ext[:-len(suffix)]))
         
         for suffix in self.HEIGHT_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'HEIGHT', self._strip_prefix(name_without_ext[:-len(suffix)])
+                return 'HEIGHT', self._strip_albedo_suffix(self._strip_prefix(name_without_ext[:-len(suffix)]))
         
         # No recognized suffix — treat as Albedo/BC
         return 'ALBEDO', self._strip_prefix(name_without_ext)
