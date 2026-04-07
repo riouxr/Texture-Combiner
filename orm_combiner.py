@@ -157,7 +157,7 @@ class ORMCombiner:
         # Detect texture type
         texture_type, base_name = self.detect_texture_type(filename)
         
-        if texture_type and base_name:
+        if texture_type and base_name and base_name.strip():
             # Create group if it doesn't exist
             if base_name not in self.file_groups:
                 self.file_groups[base_name] = {
@@ -235,6 +235,13 @@ class ORMCombiner:
         self.update_button_state()
         self.status_label.config(text="Cleared. Ready to drop files.")
     
+    @staticmethod
+    def _strip_prefix(base_name):
+        """Strip leading T_ prefix (case-insensitive) to avoid doubling it on output."""
+        if base_name.lower().startswith('t_'):
+            return base_name[2:]
+        return base_name
+
     def detect_texture_type(self, filename):
         """Detect texture type based on filename suffix"""
         # Remove extension
@@ -243,29 +250,30 @@ class ORMCombiner:
         # Check each suffix type (case-insensitive)
         for suffix in self.AO_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'AO', name_without_ext[:-len(suffix)]
+                return 'AO', self._strip_prefix(name_without_ext[:-len(suffix)])
         
         for suffix in self.ROUGH_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'ROUGH', name_without_ext[:-len(suffix)]
+                return 'ROUGH', self._strip_prefix(name_without_ext[:-len(suffix)])
         
         for suffix in self.METAL_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'METAL', name_without_ext[:-len(suffix)]
+                return 'METAL', self._strip_prefix(name_without_ext[:-len(suffix)])
         
         for suffix in self.ALBEDO_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'ALBEDO', name_without_ext[:-len(suffix)]
+                return 'ALBEDO', self._strip_prefix(name_without_ext[:-len(suffix)])
         
         for suffix in self.NORMAL_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'NORMAL', name_without_ext[:-len(suffix)]
+                return 'NORMAL', self._strip_prefix(name_without_ext[:-len(suffix)])
         
         for suffix in self.HEIGHT_SUFFIXES:
             if name_without_ext.lower().endswith(suffix.lower()):
-                return 'HEIGHT', name_without_ext[:-len(suffix)]
+                return 'HEIGHT', self._strip_prefix(name_without_ext[:-len(suffix)])
         
-        return None, None
+        # No recognized suffix — treat as Albedo/BC
+        return 'ALBEDO', self._strip_prefix(name_without_ext)
             
     def combine_all_textures(self):
         """Combine all texture sets and rename albedo/normal/height maps"""
